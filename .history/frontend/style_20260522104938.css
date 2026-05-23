@@ -1,0 +1,130 @@
+/* Page background */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1f4037, #99f2c8);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main container */
+.container {
+    background: white;
+    padding: 30px;
+    width: 70%;
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* Title */
+h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+/* Paragraph */
+p {
+    color: #555;
+}
+
+/* Textarea */
+textarea {
+    width: 90%;
+    height: 200px;
+    padding: 15px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    margin-top: 15px;
+    resize: none;
+}
+
+/* Button */
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 16px;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Button hover effect */
+button:hover {
+    background-color: #219150;
+    transform: scale(1.05);
+}
+
+/* Result text */
+#result {
+    margin-top: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+
+train_model.py
+
+
+import pandas as pd
+import os
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+fake_path = os.path.join(BASE_DIR, "..", "dataset", "Fake.csv")
+true_path = os.path.join(BASE_DIR, "..", "dataset", "True.csv")
+
+# Load dataset
+fake = pd.read_csv(fake_path)
+true = pd.read_csv(true_path)
+
+# Label data
+fake["label"] = 0   # FAKE
+true["label"] = 1   # REAL
+
+# Combine datasets
+data = pd.concat([fake, true])
+
+# Use only text column
+X = data["text"]
+y = data["label"]
+
+# Convert text to numbers (IMPORTANT NLP step)
+vectorizer = TfidfVectorizer(stop_words="english", max_df=0.7)
+X_vectorized = vectorizer.fit_transform(X)
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X_vectorized, y, test_size=0.2, random_state=42
+)
+
+# Train model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Test model
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Accuracy:", accuracy)
+
+# Save model
+joblib.dump(model, "model.pkl")
+joblib.dump(vectorizer, "vectorizer.pkl")
+
+print("Model saved successfully!")
