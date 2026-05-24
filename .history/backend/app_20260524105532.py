@@ -5,7 +5,9 @@ import os
 
 # Create Flask app
 app = Flask(__name__)
+from flask_cors import CORS
 
+app = Flask(__name__)
 # Enable CORS (IMPORTANT for frontend connection)
 CORS(app)
 
@@ -28,6 +30,7 @@ def home():
 # Prediction route
 @app.route("/predict", methods=["POST"])
 def predict():
+
     try:
         # Get JSON from frontend
         data = request.get_json()
@@ -42,13 +45,18 @@ def predict():
         vector = vectorizer.transform([text])
 
         # Predict
-        prediction = model.predict(vector)[0]
+        if prediction == 1:
+    result = "🟢 Real News"
+else:
+    result = "🔴 Fake News"
+
+return jsonify({"prediction": result})
 
         # Response
-        if prediction == 1:
-            result = "🟢 Real News"
+        if prediction == 0:
+            result = "FAKE NEWS ⚠️"
         else:
-            result = "🔴 Fake News"
+            result = "REAL NEWS ✅"
 
         return jsonify({"prediction": result})
 
@@ -59,6 +67,6 @@ def predict():
         })
 
 
-# Run server (for local testing only)
+# Run server
 if __name__ == "__main__":
     app.run(debug=True)
