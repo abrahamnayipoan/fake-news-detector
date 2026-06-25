@@ -2,12 +2,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import os
-
+a
 # Create Flask app
 app = Flask(__name__)
-from flask_cors import CORS
 
-app = Flask(__name__)
 # Enable CORS (IMPORTANT for frontend connection)
 CORS(app)
 
@@ -30,7 +28,6 @@ def home():
 # Prediction route
 @app.route("/predict", methods=["POST"])
 def predict():
-
     try:
         # Get JSON from frontend
         data = request.get_json()
@@ -48,10 +45,10 @@ def predict():
         prediction = model.predict(vector)[0]
 
         # Response
-        if prediction == 0:
-            result = "FAKE NEWS ⚠️"
+        if prediction == 1:
+            result = "🟢 Real News"
         else:
-            result = "REAL NEWS ✅"
+            result = "🔴 Fake News"
 
         return jsonify({"prediction": result})
 
@@ -62,6 +59,6 @@ def predict():
         })
 
 
-# Run server
+# Run server (for local testing only)
 if __name__ == "__main__":
     app.run(debug=True)
