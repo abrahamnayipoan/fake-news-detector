@@ -40,7 +40,7 @@ def predict():
         vector = vectorizer.transform([text])
         prediction = model.predict(vector)[0]
 
-        result = "Likely Real News" if prediction == 1 else "Likely Fake News"
+        result = "Real News" if prediction == 1 else "Fake News"
 
         return jsonify({
             "prediction": result
@@ -57,7 +57,13 @@ def predict():
 @app.route("/latest-news", methods=["GET"])
 def latest_news():
     try:
-        url = f"https://newsapi.org/v2/top-headlines?country=us&pageSize=10&apiKey={NEWS_API_KEY}"
+         if not NEWS_API_KEY or NEWS_API_KEY == "YOUR_NEWS_API_KEY":
+            return jsonify({
+                "error": "News API key is missing"
+            }), 500
+
+         url = f"https://newsapi.org/v2/top-headlines?country=us&pageSize=10&apiKey={NEWS_API_KEY}"
+            
 
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -70,7 +76,6 @@ def latest_news():
         for article in articles:
             title = article.get("title") or ""
             description = article.get("description") or ""
-
             content = f"{title} {description}".strip()
 
             if not content:
@@ -83,18 +88,18 @@ def latest_news():
             confidence = round(max(probabilities) * 100, 2)
 
             label = "Real News" if prediction == 1 else "Fake News"
+
             source = article.get("source") or {}
 
             results.append({
-    "headline": title,
-    "description": description,
-    "source": source.get("name", "Unknown source"),
-    "url": article.get("url"),
-    "image": article.get("urlToImage"),
-    "publishedAt": article.get("publishedAt"),
-    "prediction": label,
-    "confidence": confidence
-})
+                "headline": title,
+                "description": description,
+                "source": source.get("name", "Unknown source"),
+                "url": article.get("url"),
+                "publishedAt": article.get("publishedAt"),
+                "prediction": label,
+                "confidence": confidence
+            })
 
         return jsonify({
             "articles": results

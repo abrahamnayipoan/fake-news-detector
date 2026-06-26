@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://fake-news-detector-1-bi23.onrender.com";
+const API_BASE_URL = "http://127.0.0.1:5000";
 
 // When deploying online, change it back to your Render backend:
 // const API_BASE_URL = "https://fake-news-detector-1-bi23.onrender.com";

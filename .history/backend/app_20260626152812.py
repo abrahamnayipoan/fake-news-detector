@@ -86,15 +86,14 @@ def latest_news():
             source = article.get("source") or {}
 
             results.append({
-    "headline": title,
-    "description": description,
-    "source": source.get("name", "Unknown source"),
-    "url": article.get("url"),
-    "image": article.get("urlToImage"),
-    "publishedAt": article.get("publishedAt"),
-    "prediction": label,
-    "confidence": confidence
-})
+                "headline": title,
+                "description": description,
+                "source": source.get("name", "Unknown source"),
+                "url": article.get("url"),
+                "publishedAt": article.get("publishedAt"),
+                "prediction": label,
+                "confidence": confidence
+            })
 
         return jsonify({
             "articles": results

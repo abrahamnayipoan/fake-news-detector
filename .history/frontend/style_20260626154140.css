@@ -11,7 +11,7 @@ body {
     animation: flags 20s infinite;
 }
 
-/* 🌍 Animated Countries Flags Background */
+/*  Animated Countries Flags Background */
 @keyframes flags {
 
     0% {
@@ -35,22 +35,25 @@ body {
     }
 }
 
-/* 📰 Main Container */
+/*  Main Container */
 .container {
 
-    width: 70%;
+    width: 75%;
+
     margin: 60px auto;
+
     padding: 30px;
 
     background:
     linear-gradient(
-        rgba(255,255,255,0.88),
-        rgba(255,255,255,0.88)
+        rgba(255,255,255,0.75),
+        rgba(255,255,255,0.75)
     ),
 
-    url("https://images.unsplash.com/photo-1504711434969-e33886168f5c");
+    url("https://images.unsplash.com/photo-1495020689067-958852a7765e");
 
     background-size: cover;
+
     background-position: center;
 
     border-radius: 20px;
@@ -59,8 +62,7 @@ body {
 
     text-align: center;
 }
-
-/* 🔥 Animated Heading */
+/*  Animated Heading */
 h1 {
 
     font-size: 45px;
@@ -159,4 +161,10 @@ h2 {
     margin-top: 20px;
 
     font-size: 28px;
+}
+#result {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s ease;
 }

@@ -3,6 +3,7 @@ from flask_cors import CORS
 import joblib
 import os
 import requests
+NEWS_API_KEY = "ca9cf9c6c15a48218cb035490a2b2068"
 
 app = Flask(__name__)
 CORS(app)
@@ -11,8 +12,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
 VECTORIZER_PATH = os.path.join(BASE_DIR, "vectorizer.pkl")
-
-NEWS_API_KEY = "ca9cf9c6c15a48218cb035490a2b2068"
 
 model = joblib.load(MODEL_PATH)
 vectorizer = joblib.load(VECTORIZER_PATH)
@@ -40,7 +39,10 @@ def predict():
         vector = vectorizer.transform([text])
         prediction = model.predict(vector)[0]
 
-        result = "Likely Real News" if prediction == 1 else "Likely Fake News"
+        if prediction == 1:
+            result = "Real News"
+        else:
+            result = "Fake News"
 
         return jsonify({
             "prediction": result
@@ -54,57 +56,56 @@ def predict():
         }), 500
 
 
-@app.route("/latest-news", methods=["GET"])
+if __name__ == "__main__":
+    app.run(debug=True)
+@app.route("/latest-news")
 def latest_news():
+
     try:
-        url = f"https://newsapi.org/v2/top-headlines?country=us&pageSize=10&apiKey={NEWS_API_KEY}"
 
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        url = (
+            f"https://newsapi.org/v2/top-headlines"
+            f"?country=us"
+            f"&pageSize=10"
+            f"&apiKey={NEWS_API_KEY}"
+        )
 
+        response = requests.get(url)
         news_data = response.json()
-        articles = news_data.get("articles", [])
 
         results = []
 
-        for article in articles:
-            title = article.get("title") or ""
-            description = article.get("description") or ""
+        for article in news_data.get("articles", []):
 
-            content = f"{title} {description}".strip()
+            title = article.get("title", "")
 
-            if not content:
+            if not title:
                 continue
 
-            vector = vectorizer.transform([content])
+            vector = vectorizer.transform([title])
+
             prediction = model.predict(vector)[0]
 
             probabilities = model.predict_proba(vector)[0]
             confidence = round(max(probabilities) * 100, 2)
 
-            label = "Real News" if prediction == 1 else "Fake News"
-            source = article.get("source") or {}
+            label = (
+                "🟢 Real News"
+                if prediction == 1
+                else "🔴 Fake News"
+            )
 
             results.append({
-    "headline": title,
-    "description": description,
-    "source": source.get("name", "Unknown source"),
-    "url": article.get("url"),
-    "image": article.get("urlToImage"),
-    "publishedAt": article.get("publishedAt"),
-    "prediction": label,
-    "confidence": confidence
-})
+                "headline": title,
+                "source": article["source"]["name"],
+                "prediction": label,
+                "confidence": confidence
+            })
 
-        return jsonify({
-            "articles": results
-        })
+        return jsonify(results)
 
     except Exception as e:
+
         return jsonify({
             "error": str(e)
-        }), 500
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+        })
