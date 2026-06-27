@@ -67,7 +67,7 @@ def predict():
 # ======================
 # NEWS API ROUTE
 # ======================
-NEWS_API_KEY = "ca9cf9c6c15a48218cb035490a2b2068"
+NEWS_API_KEY = "YOUR_NEWSAPI_KEY_HERE"
 
 @app.route("/latest-news", methods=["GET"])
 def latest_news():
