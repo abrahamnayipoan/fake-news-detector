@@ -5,7 +5,7 @@ import os
 import requests
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type"]}})
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,8 +14,15 @@ VECTORIZER_PATH = os.path.join(BASE_DIR, "vectorizer.pkl")
 
 NEWS_API_KEY = "ca9cf9c6c15a48218cb035490a2b2068"
 
-model = joblib.load(MODEL_PATH)
-vectorizer = joblib.load(VECTORIZER_PATH)
+try:
+    model = joblib.load(MODEL_PATH)
+    vectorizer = joblib.load(VECTORIZER_PATH)
+    print(f"✓ Model loaded from {MODEL_PATH}")
+    print(f"✓ Vectorizer loaded from {VECTORIZER_PATH}")
+except FileNotFoundError as e:
+    print(f"✗ Error loading model files: {e}")
+    print("Make sure you've run train_model.py first!")
+    raise
 
 
 @app.route("/")
@@ -107,4 +114,6 @@ def latest_news():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("Starting Flask server on http://127.0.0.1:5000")
+    print("Make sure the frontend is accessing this URL...")
+    app.run(host="127.0.0.1", port=5000, debug=True)
