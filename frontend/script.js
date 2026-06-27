@@ -3,27 +3,22 @@ const API_BASE_URL = "http://127.0.0.1:5000";
 // For online deployment, use this instead:
 // const API_BASE_URL = "https://fake-news-detector-1-bi23.onrender.com";
 
-function openLatestNews() {
-    document.getElementById("latestNewsSection").style.display = "block";
-    document.getElementById("latestNewsSection").scrollIntoView({ behavior: "smooth" });
-}
+function showSection(sectionId) {
+    const sections = document.querySelectorAll(".page-section");
 
-function closeLatestNews() {
-    document.getElementById("latestNewsSection").style.display = "none";
-    document.getElementById("latestNewsResult").innerHTML = "";
-}
+    sections.forEach(function (section) {
+        section.classList.remove("active-section");
+    });
 
-function openImageUpload() {
-    document.getElementById("imageUploadSection").style.display = "block";
-    document.getElementById("imageUploadSection").scrollIntoView({ behavior: "smooth" });
-}
+    const selectedSection = document.getElementById(sectionId);
 
-function closeImageUpload() {
-    document.getElementById("imageUploadSection").style.display = "none";
-    document.getElementById("imageResult").innerHTML = "";
-    document.getElementById("extractedTextBox").innerHTML = "";
-    document.getElementById("imageInput").value = "";
-    document.getElementById("previewImage").style.display = "none";
+    if (selectedSection) {
+        selectedSection.classList.add("active-section");
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
 }
 
 async function predictNews() {
@@ -93,7 +88,7 @@ async function loadLatestNews() {
 
         latestNewsBox.innerHTML = "";
 
-        articles.forEach(article => {
+        articles.forEach(function (article) {
             const card = document.createElement("div");
             card.className = "news-card";
 
@@ -105,9 +100,7 @@ async function loadLatestNews() {
                 <p>${article.description || "No description available."}</p>
                 <p><strong>Source:</strong> ${article.source}</p>
                 <p><strong>Published:</strong> ${article.publishedAt || "Unknown date"}</p>
-                <p class="${predictionClass}">
-                    <strong>Prediction:</strong> ${article.prediction}
-                </p>
+                <p class="${predictionClass}"><strong>Prediction:</strong> ${article.prediction}</p>
                 <p><strong>Confidence:</strong> ${article.confidence}%</p>
                 <a href="${article.url}" target="_blank">Read full article</a>
             `;
@@ -119,16 +112,6 @@ async function loadLatestNews() {
         latestNewsBox.innerHTML = "<p class='error'>Error connecting to backend.</p>";
     }
 }
-
-document.getElementById("imageInput").addEventListener("change", function () {
-    const file = this.files[0];
-    const previewImage = document.getElementById("previewImage");
-
-    if (file) {
-        previewImage.src = URL.createObjectURL(file);
-        previewImage.style.display = "block";
-    }
-});
 
 function detectSourceFromText(text) {
     const sources = [
@@ -212,10 +195,7 @@ async function predictImageNews() {
             return;
         }
 
-        imageResult.innerHTML = `
-            ${data.prediction}<br>
-            Source: ${detectedSource}
-        `;
+        imageResult.innerHTML = `${data.prediction}<br>Source: ${detectedSource}`;
 
         if (data.prediction.includes("Real")) {
             imageResult.style.color = "green";
@@ -228,3 +208,17 @@ async function predictImageNews() {
         imageResult.style.color = "red";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const imageInput = document.getElementById("imageInput");
+    const previewImage = document.getElementById("previewImage");
+
+    imageInput.addEventListener("change", function () {
+        const file = this.files[0];
+
+        if (file) {
+            previewImage.src = URL.createObjectURL(file);
+            previewImage.style.display = "block";
+        }
+    });
+});
