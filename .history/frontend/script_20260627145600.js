@@ -1,7 +1,12 @@
 // ==========================
-// CONFIG
+// CONFIG (LOCAL + DEPLOYMENT)
 // ==========================
+
+// Local backend (Flask)
 const API_BASE_URL = "http://127.0.0.1:5000";
+
+// For online deployment (Render, etc), use this instead:
+// const API_BASE_URL = "https://fake-news-detector-1-bi23.onrender.com";
 
 
 // ==========================
@@ -55,10 +60,13 @@ async function predictNews() {
         }
 
         resultBox.innerHTML = data.prediction;
-        resultBox.style.color = data.prediction.includes("Real") ? "green" : "red";
+
+        resultBox.style.color = data.prediction.includes("Real")
+            ? "green"
+            : "red";
 
     } catch (error) {
-        console.error("Backend error:", error);
+        console.error(error);
         resultBox.innerHTML = "Error connecting to backend (check server)";
         resultBox.style.color = "red";
     }
@@ -115,16 +123,16 @@ async function loadLatestNews() {
             latestNewsBox.appendChild(card);
         });
 
-    } catch (error) {
-        console.error("Backend error:", error);
-        latestNewsBox.innerHTML =
-            "<p class='error'>Error connecting to backend.</p>";
-    }
+    catch (error) {
+    console.log("FULL ERROR:", error);
+    resultBox.innerHTML = "Error connecting to backend (check console)";
+    resultBox.style.color = "red";
+}
 }
 
 
 // ==========================
-// SOURCE DETECTION
+// SOURCE DETECTION (IMAGE OCR)
 // ==========================
 function detectSourceFromText(text) {
     const sources = [
@@ -196,7 +204,7 @@ async function predictImageNews() {
         const data = await response.json();
 
         if (!response.ok) {
-            imageResult.innerHTML = data.error || data.message || "Prediction failed.";
+            imageResult.innerHTML = data.error || "Prediction failed.";
             imageResult.style.color = "red";
             return;
         }
@@ -207,7 +215,7 @@ async function predictImageNews() {
         imageResult.style.color = isReal ? "green" : "red";
 
     } catch (error) {
-        console.error("Image error:", error);
+        console.error(error);
         imageResult.innerHTML = "Error processing image.";
         imageResult.style.color = "red";
     }
@@ -221,14 +229,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageInput = document.getElementById("imageInput");
     const previewImage = document.getElementById("previewImage");
 
-    if (imageInput) {
-        imageInput.addEventListener("change", function () {
-            const file = this.files[0];
+    imageInput.addEventListener("change", function () {
+        const file = this.files[0];
 
-            if (file) {
-                previewImage.src = URL.createObjectURL(file);
-                previewImage.style.display = "block";
-            }
-        });
-    }
+        if (file) {
+            previewImage.src = URL.createObjectURL(file);
+            previewImage.style.display = "block";
+        }
+    });
 });
