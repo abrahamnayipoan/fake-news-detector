@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection AI</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+
+    <div class="container page-section active-section compact-main" id="mainSection">
+    <h1>Fake News Detection System</h1>
+
+    <p>Paste a news article below to check if it is real or fake.</p>
+
+    <textarea id="newsInput" placeholder="Enter or paste news here..."></textarea>
+
+    <br>
+
+    <button onclick="predictNews()">Analyze News →</button>
+
+    <h2 id="result"></h2>
+
+    <div class="feature-buttons">
+        <button onclick="showSection('latestNewsSection')">Latest News Auto Prediction →</button>
+        <button onclick="showSection('imageUploadSection')">Upload News Image →</button>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="showSection('latestNewsSection')">Next →</button>
+    </div>
+</div>
+
+    <div class="container page-section" id="latestNewsSection">
+        <h1>Latest News Auto Prediction</h1>
+
+        <p>Fetch latest news articles and predict them automatically.</p>
+
+        <button onclick="loadLatestNews()">Fetch Latest News →</button>
+
+        <div id="latestNewsResult" class="news-grid"></div>
+
+        <div class="nav-buttons">
+  
+</div>
+    </div>
+
+    <div class="container page-section" id="imageUploadSection">
+        <h1>Upload News Image</h1>
+
+        <p>Upload a news screenshot or image that contains text.</p>
+
+        <label for="imageInput">Choose an image to upload:</label>
+        <input type="file" id="imageInput" accept="image/*">
+
+        <br><br>
+
+        <img id="previewImage" class="preview-image" alt="Uploaded preview">
+
+        <br>
+
+        <button onclick="predictImageNews()">Analyze Image →</button>
+
+        <h2 id="imageResult"></h2>
+
+        <div id="extractedTextBox"></div>
+
+       <div class="nav-buttons">
+    <button onclick="showSection('latestNewsSection')">← Back</button>
+    <button onclick="showSection('mainSection')">Main Page →</button>
+</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
